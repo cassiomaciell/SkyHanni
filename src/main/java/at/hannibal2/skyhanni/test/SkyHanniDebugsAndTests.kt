@@ -437,7 +437,7 @@ object SkyHanniDebugsAndTests {
                     addString("Graph Area: ${SkyBlockUtils.graphArea}")
                 }
 
-                config.debugLocationPos.renderRenderables(renderables, posLabel = "SkyBlock Area (Debug)")
+                config.debugLocationPos.renderRenderables(renderables, posLabel = "SkyBlock Area (Debug)", debug = true)
             }
 
             if (debugConfig.rayTracedOreBlock) {
@@ -446,6 +446,7 @@ object SkyHanniDebugsAndTests {
                         config.debugOrePos.renderString(
                             "Looking at: ${ore.name} (${pos.toCleanString()})",
                             posLabel = "OreBlock",
+                            debug = true
                         )
                     }
                 }
@@ -456,9 +457,9 @@ object SkyHanniDebugsAndTests {
         if (!debugConfig.enabled) return
 
         if (displayLine.isNotEmpty()) {
-            config.debugPos.renderString("test: $displayLine", posLabel = "Test")
+            config.debugPos.renderString("test: $displayLine", posLabel = "Test", debug = true)
         }
-        config.debugPos.renderRenderables(displayList, posLabel = "Test Display")
+        config.debugPos.renderRenderables(displayList, posLabel = "Test Display", debug = true)
     }
 
     @HandleEvent(onlyOnSkyblock = true)

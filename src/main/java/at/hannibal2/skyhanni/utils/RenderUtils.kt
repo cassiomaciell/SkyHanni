@@ -10,6 +10,7 @@ import at.hannibal2.skyhanni.events.RenderGuiItemOverlayEvent
 import at.hannibal2.skyhanni.utils.ColorUtils.toColor
 import at.hannibal2.skyhanni.utils.compat.DrawContextUtils
 import at.hannibal2.skyhanni.utils.compat.GuiScreenUtils
+import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.renderables.Renderable
 import at.hannibal2.skyhanni.utils.renderables.RenderableUtils.renderXAligned
 import com.mojang.blaze3d.systems.RenderSystem
@@ -134,8 +135,8 @@ object RenderUtils {
     }
 
     @Deprecated("Use renderRenderable instead", ReplaceWith("renderRenderable(renderable, posLabel)"))
-    fun Position.renderString(string: String?, offsetX: Int = 0, offsetY: Int = 0, posLabel: String) {
-        if (string.isNullOrBlank()) return
+    fun Position.renderString(string: String?, offsetX: Int = 0, offsetY: Int = 0, posLabel: String, debug: Boolean = false) {
+        if ((!debug && MinecraftCompat.showDebugHud) || string.isNullOrBlank()) return
         val x = renderString0(string, offsetX, offsetY, centerX)
         GuiEditManager.add(this, posLabel, x, 10)
     }
@@ -163,8 +164,8 @@ object RenderUtils {
     }
 
     @Deprecated("Use renderRenderables instead", ReplaceWith("renderRenderables(renderables)"))
-    fun Position.renderStrings(list: List<String>, extraSpace: Int = 0, posLabel: String) {
-        if (list.isEmpty()) return
+    fun Position.renderStrings(list: List<String>, extraSpace: Int = 0, posLabel: String, debug: Boolean = false) {
+        if ((!debug && MinecraftCompat.showDebugHud) || list.isEmpty()) return
 
         var offsetY = 0
         var longestX = 0
@@ -183,8 +184,9 @@ object RenderUtils {
         extraSpace: Int = 0,
         posLabel: String,
         addToGuiManager: Boolean = true,
+        debug: Boolean = false
     ) {
-        if (renderables.isEmpty()) return
+        if ((!debug && MinecraftCompat.showDebugHud) || renderables.isEmpty()) return
         var longestY = 0
         val longestX = renderables.maxOf { it.width }
         for (line in renderables) {
@@ -206,10 +208,11 @@ object RenderUtils {
         renderable: Renderable?,
         posLabel: String,
         addToGuiManager: Boolean = true,
+        debug: Boolean = false
     ) {
         // cause crashes and errors on purpose
         DrawContextUtils.drawContext
-        if (renderable == null) return
+        if ((!debug && MinecraftCompat.showDebugHud) || renderable == null) return
         DrawContextUtils.pushMatrix()
         val (x, y) = transform()
         Renderable.withMousePosition(x, y) {
