@@ -31,6 +31,10 @@ class GardenConfig {
     val visitors: VisitorConfig = VisitorConfig()
 
     @Expose
+    @Category(name = "Auto Settings", desc = "")
+    val autoSettings: AutoSettingsConfig = AutoSettingsConfig()
+
+    @Expose
     @ConfigOption(name = "Numbers", desc = "")
     @Accordion
     val number: NumbersConfig = NumbersConfig()

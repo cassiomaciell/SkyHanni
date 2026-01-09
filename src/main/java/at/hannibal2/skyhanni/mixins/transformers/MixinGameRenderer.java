@@ -3,8 +3,10 @@ package at.hannibal2.skyhanni.mixins.transformers;
 import at.hannibal2.skyhanni.data.GuiEditManager;
 import at.hannibal2.skyhanni.events.render.gui.RenderingTickEvent;
 import at.hannibal2.skyhanni.events.render.gui.ScreenDrawnEvent;
+import at.hannibal2.skyhanni.features.garden.GardenAutoSettings;
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat;
 import com.llamalad7.mixinextras.sugar.Local;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.GameRenderer;
@@ -26,6 +28,11 @@ public class MixinGameRenderer {
     private void onRenderEndPhase(DeltaTracker tickCounter, boolean tick, CallbackInfo ci, @Local GuiGraphics context) {
        if (MinecraftCompat.INSTANCE.getLocalPlayerExists()) new RenderingTickEvent(context, false).post();
    }
+
+    @Inject(at = @At(value = "HEAD"), method = "bobView", cancellable = true)
+    private void bobView(PoseStack poseStack, float f, CallbackInfo ci) {
+        if (GardenAutoSettings.shouldDisableViewBobbing()) ci.cancel();
+    }
 
     //#if MC < 1.21.6
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;flush()V"))
