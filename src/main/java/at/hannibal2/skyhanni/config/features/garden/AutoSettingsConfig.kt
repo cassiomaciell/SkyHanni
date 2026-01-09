@@ -9,6 +9,6 @@ class AutoSettingsConfig {
     @Expose
     @ConfigEditorBoolean
     @FeatureToggle
-    @ConfigOption(name= "Disable View Bobbing", desc = "Disables view bobbing while holding a farming tool.")
+    @ConfigOption(name = "Disable View Bobbing", desc = "Disables view bobbing while holding a farming tool.")
     var disableViewBobbing: Boolean = false
 }

@@ -7,7 +7,6 @@ import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 @SkyHanniModule
 object GardenAutoSettings {
     val config get() = GardenApi.config.autoSettings
-
     var isHoldingFarmingTool = false
 
     @JvmStatic
