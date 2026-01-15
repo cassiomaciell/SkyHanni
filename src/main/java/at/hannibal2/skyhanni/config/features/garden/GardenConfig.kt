@@ -32,10 +32,6 @@ class GardenConfig {
     val visitors: VisitorConfig = VisitorConfig()
 
     @Expose
-    @Category(name = "Auto Settings", desc = "")
-    val autoSettings: AutoSettingsConfig = AutoSettingsConfig()
-
-    @Expose
     @ConfigOption(name = "Numbers", desc = "")
     @Accordion
     val number: NumbersConfig = NumbersConfig()
@@ -232,4 +228,10 @@ class GardenConfig {
     @ConfigEditorBoolean
     @FeatureToggle
     var helpCarrolyn: Boolean = true
+
+    @Expose
+    @ConfigEditorBoolean
+    @FeatureToggle
+    @ConfigOption(name = "Disable View Bobbing", desc = "Disables view bobbing while holding a farming tool.")
+    var disableViewBobbing: Boolean = false
 }
