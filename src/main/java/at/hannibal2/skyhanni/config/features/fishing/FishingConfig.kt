@@ -123,4 +123,10 @@ class FishingConfig {
     @ConfigEditorBoolean
     @FeatureToggle
     var muteBanshee: Boolean = false
+
+    @Expose
+    @ConfigOption(name = "Mute Agarimoo damage sounds", desc = "Disables player damage sounds when an Agarimoo is nearby.")
+    @ConfigEditorBoolean
+    @FeatureToggle
+    var muteAgarimooDamage: Boolean = false
 }
