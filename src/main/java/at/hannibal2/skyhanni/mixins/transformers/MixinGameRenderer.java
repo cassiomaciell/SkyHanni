@@ -24,29 +24,29 @@ public class MixinGameRenderer {
         if (MinecraftCompat.INSTANCE.getLocalPlayerExists()) new RenderingTickEvent(context, true).post();
     }
 
-   @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;renderSavingIndicator(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V"))
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;renderSavingIndicator(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V"))
     private void onRenderEndPhase(DeltaTracker tickCounter, boolean tick, CallbackInfo ci, @Local GuiGraphics context) {
-       if (MinecraftCompat.INSTANCE.getLocalPlayerExists()) new RenderingTickEvent(context, false).post();
-   }
+        if (MinecraftCompat.INSTANCE.getLocalPlayerExists()) new RenderingTickEvent(context, false).post();
+    }
+
+    //? < 1.21.6 {
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;flush()V"))
+    //?} else {
+    /*@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;render(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V", shift = At.Shift.AFTER))
+     *///?}
+    private void onRenderTail(DeltaTracker tickCounter, boolean tick, CallbackInfo ci, @Local GuiGraphics context) {
+        GuiEditManager.renderLast(context);
+    }
+
+    //? < 1.21.6 {
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/Screen;renderWithTooltip(Lnet/minecraft/client/gui/GuiGraphics;IIF)V"))
+    private void onRenderTooltip(DeltaTracker tickCounter, boolean tick, CallbackInfo ci, @Local GuiGraphics context) {
+        new ScreenDrawnEvent(context, Minecraft.getInstance().screen).post();
+    }
+    //?}
 
     @Inject(at = @At(value = "HEAD"), method = "bobView", cancellable = true)
     private void bobView(PoseStack poseStack, float f, CallbackInfo ci) {
         if (GardenAutoSettings.shouldDisableViewBobbing()) ci.cancel();
     }
-
-    //#if MC < 1.21.6
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;flush()V"))
-    //#else
-    //$$ @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;render(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V", shift = At.Shift.AFTER))
-    //#endif
-    private void onRenderTail(DeltaTracker tickCounter, boolean tick, CallbackInfo ci, @Local GuiGraphics context) {
-        GuiEditManager.renderLast(context);
-    }
-
-    //#if MC < 1.21.6
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/Screen;renderWithTooltip(Lnet/minecraft/client/gui/GuiGraphics;IIF)V"))
-    private void onRenderTooltip(DeltaTracker tickCounter, boolean tick, CallbackInfo ci, @Local GuiGraphics context) {
-         new ScreenDrawnEvent(context, Minecraft.getInstance().screen).post();
-    }
-    //#endif
 }
