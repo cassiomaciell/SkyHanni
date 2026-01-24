@@ -10,10 +10,11 @@ object GardenAutoSettings {
     var isHoldingFarmingTool = false
 
     @JvmStatic
-    fun shouldDisableViewBobbing() = config.disableViewBobbing && isHoldingFarmingTool
+    fun shouldDisableViewBobbing() = GardenApi.inGarden() && config.disableViewBobbing && isHoldingFarmingTool
 
     @HandleEvent
     fun onGardenToolChange(event: GardenToolChangeEvent) {
         (event.crop != null).also { isHoldingFarmingTool = it }
     }
+
 }
