@@ -132,6 +132,12 @@ class FishingConfig {
     var muteAgarimooDamage: Boolean = false
 
     @Expose
+    @ConfigOption(name = "Mute Thunder Armor", desc = "Disables Thunder Armor changing sounds")
+    @ConfigEditorBoolean
+    @FeatureToggle
+    var muteThunderArmor: Boolean = false
+
+    @Expose
     @ConfigOption(name = "Flay/Whip Hider", desc = "Hides Flaming Flay/Soul Whip particles that are within this Distance of you")
     @ConfigEditorSlider(minValue = 0.0f, maxValue = 15.0f, minStep = 1f)
     var flayHideDistance: Float = 2.0f

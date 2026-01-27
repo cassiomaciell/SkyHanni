@@ -2,12 +2,15 @@ package at.hannibal2.skyhanni.features.fishing
 
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
+import at.hannibal2.skyhanni.data.ActionBarData
 import at.hannibal2.skyhanni.data.mob.Mob
 import at.hannibal2.skyhanni.events.MobEvent
 import at.hannibal2.skyhanni.events.PlaySoundEvent
 import at.hannibal2.skyhanni.events.fishing.SeaCreatureFishEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
+import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
+import at.hannibal2.skyhanni.utils.StringUtils.removeColor
 import at.hannibal2.skyhanni.utils.collection.TimeLimitedSet
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
@@ -18,6 +21,7 @@ object MuteAgarimooDamage {
     private val agarimoos = TimeLimitedSet<Mob>(6.minutes)
     private var lastCatch = SimpleTimeMark.farPast()
     private var lastCatchName = ""
+    private val config get() = SkyHanniMod.feature.fishing
 
     @HandleEvent(onlyOnSkyblock = true)
     fun onMobFirstSeen(event: MobEvent.FirstSeen.SkyblockMob) {
@@ -44,11 +48,18 @@ object MuteAgarimooDamage {
         lastCatchName = event.seaCreature.name
     }
 
+    private fun isWearingThunderGear(): Boolean {
+        return ActionBarData.getActionBar().contains("⚡")
+    }
+
     @HandleEvent(onlyOnSkyblock = true)
     fun onSound(event: PlaySoundEvent) {
-        if (!FishingApi.isFishing(checkRodInHand = true) || !SkyHanniMod.feature.fishing.muteAgarimooDamage) return
-        if (agarimoos.isEmpty() || event.soundName != "entity.player.hurt" || event.distanceToPlayer > 1) return
+        val sound = event.soundName
+        val isFishing = FishingApi.isFishing(checkRodInHand = true)
 
-        event.cancel()
+        val muteThunderArmor = sound == "entity.firework_rocket.twinkle_far" && config.muteThunderArmor && isWearingThunderGear()
+        val muteAgarimooDamage = sound == "entity.player.hurt" && config.muteAgarimooDamage && agarimoos.isNotEmpty() && isFishing
+
+        if (muteThunderArmor || (muteAgarimooDamage && event.distanceToPlayer > 1)) event.cancel()
     }
 }
