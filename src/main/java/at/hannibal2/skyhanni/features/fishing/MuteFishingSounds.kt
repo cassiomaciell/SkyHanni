@@ -8,15 +8,14 @@ import at.hannibal2.skyhanni.events.MobEvent
 import at.hannibal2.skyhanni.events.PlaySoundEvent
 import at.hannibal2.skyhanni.events.fishing.SeaCreatureFishEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
-import at.hannibal2.skyhanni.utils.ChatUtils
+import at.hannibal2.skyhanni.utils.ServerTimeMark
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
-import at.hannibal2.skyhanni.utils.StringUtils.removeColor
 import at.hannibal2.skyhanni.utils.collection.TimeLimitedSet
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 
 @SkyHanniModule
-object MuteAgarimooDamage {
+object MuteFishingSounds {
 
     private val agarimoos = TimeLimitedSet<Mob>(6.minutes)
     private var lastCatch = SimpleTimeMark.farPast()
@@ -57,9 +56,9 @@ object MuteAgarimooDamage {
         val sound = event.soundName
         val isFishing = FishingApi.isFishing(checkRodInHand = true)
 
-        val muteThunderArmor = sound == "entity.firework_rocket.twinkle_far" && config.muteThunderArmor && isWearingThunderGear()
+        val muteThunderGear = sound == "entity.firework_rocket.twinkle_far" && config.muteThunderGear && isWearingThunderGear()
         val muteAgarimooDamage = sound == "entity.player.hurt" && config.muteAgarimooDamage && agarimoos.isNotEmpty() && isFishing
 
-        if (muteThunderArmor || (muteAgarimooDamage && event.distanceToPlayer > 1)) event.cancel()
+        if (muteThunderGear || (muteAgarimooDamage && event.distanceToPlayer > 1)) event.cancel()
     }
 }
