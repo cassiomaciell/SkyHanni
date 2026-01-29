@@ -59,6 +59,6 @@ object MuteFishingSounds {
         val muteThunderGear = sound == "entity.firework_rocket.twinkle_far" && config.muteThunderGear && isWearingThunderGear()
         val muteAgarimooDamage = sound == "entity.player.hurt" && config.muteAgarimooDamage && agarimoos.isNotEmpty() && isFishing
 
-        if (muteThunderGear || (muteAgarimooDamage && event.distanceToPlayer > 1)) event.cancel()
+        if (muteThunderGear || (muteAgarimooDamage && event.distanceToPlayer <= 1)) event.cancel()
     }
 }
