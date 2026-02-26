@@ -97,18 +97,20 @@ interface Renderable {
             else -> null
         }
 
-        fun link(text: String, bypassChecks: Boolean = false, onLeftClick: () -> Unit): Renderable =
-            link(text(text), onLeftClick, bypassChecks = bypassChecks)
+        fun link(text: String, bypassChecks: Boolean = false, onLeftClick: () -> Unit = {}, onRightClick: () -> Unit): Renderable =
+            link(text(text), onLeftClick, onRightClick, bypassChecks = bypassChecks)
 
         fun optionalLink(
             text: String,
             onLeftClick: () -> Unit,
+            onRightClick: () -> Unit = {},
             bypassChecks: Boolean = false,
             highlightsOnHoverSlots: List<Int> = emptyList(),
             condition: () -> Boolean = { true },
         ): Renderable = link(
             text(text),
             onLeftClick,
+            onRightClick,
             bypassChecks,
             highlightsOnHoverSlots = highlightsOnHoverSlots,
             condition,
@@ -117,6 +119,7 @@ interface Renderable {
         fun link(
             renderable: Renderable,
             onLeftClick: () -> Unit,
+            onRightClick: () -> Unit = {},
             bypassChecks: Boolean = false,
             highlightsOnHoverSlots: List<Int> = emptyList(),
             condition: () -> Boolean = { true },
@@ -128,6 +131,7 @@ interface Renderable {
                 highlightsOnHoverSlots = highlightsOnHoverSlots,
             ),
             onLeftClick,
+            onRightClick,
             bypassChecks,
             condition,
         )
@@ -135,20 +139,22 @@ interface Renderable {
         fun clickable(
             text: String,
             onLeftClick: () -> Unit,
+            onRightClick: () -> Unit = {},
             bypassChecks: Boolean = false,
             condition: () -> Boolean = { true },
             tips: List<Any>? = null,
             onHover: () -> Unit = {},
-        ) = clickable(text(text), onLeftClick, bypassChecks, condition, tips, onHover)
+        ) = clickable(text(text), onLeftClick, onRightClick, bypassChecks, condition, tips, onHover)
 
         fun clickable(
             render: Renderable,
             onLeftClick: () -> Unit,
+            onRightClick: () -> Unit = {},
             bypassChecks: Boolean = false,
             condition: () -> Boolean = { true },
             tips: List<Any>? = null,
             onHover: () -> Unit = {},
-        ) = clickable(render, mapOf(LEFT_MOUSE to onLeftClick), bypassChecks, condition, tips, onHover)
+        ) = clickable(render, mapOf(LEFT_MOUSE to onLeftClick, RIGHT_MOUSE to onRightClick), bypassChecks, condition, tips, onHover)
 
         fun clickable(
             text: String,
@@ -308,8 +314,7 @@ interface Renderable {
             val inMenu = Minecraft.getInstance().screen !is PauseScreen
             val isGuiPositionEditor = guiScreen !is GuiPositionEditor
             val isNotInSignAndOnSlot = if (guiScreen !is SignEditScreen && guiScreen !is GuideGui<*>) {
-                ToolTipData.lastSlot == null
-                    || GuiData.preDrawEventCancelled
+                ToolTipData.lastSlot == null || GuiData.preDrawEventCancelled
             } else true
             val isConfigScreen = !ConfigUtils.configScreenCurrentlyOpen
 
@@ -318,13 +323,7 @@ interface Renderable {
             val isInSkytilsSettings =
                 openGui.let { it.startsWith("gg.skytils.vigilance.gui.") || it.startsWith("gg.skytils.skytilsmod.gui.") }
 
-            val result =
-                isGuiPositionEditor &&
-                    inMenu &&
-                    isNotInSignAndOnSlot &&
-                    isConfigScreen &&
-                    !isInSkytilsPv &&
-                    !isInSkytilsSettings
+            val result = isGuiPositionEditor && inMenu && isNotInSignAndOnSlot && isConfigScreen && !isInSkytilsPv && !isInSkytilsSettings
 
             if (debug) {
                 if (!result) {
@@ -564,8 +563,10 @@ interface Renderable {
                 } else {
                     val scale = 0.00390625f
 
-                    val (uMin, vMin) = if (texture == SkillProgressBarConfig.TexturedBar.UsedTexture.MATCH_PACK)
-                        Pair(0f, 64f * scale) else Pair(0f, 0f)
+                    val (uMin, vMin) = if (texture == SkillProgressBarConfig.TexturedBar.UsedTexture.MATCH_PACK) Pair(
+                        0f,
+                        64f * scale,
+                    ) else Pair(0f, 0f)
 
                     if (texture == SkillProgressBarConfig.TexturedBar.UsedTexture.MATCH_PACK) {
                         DrawContextUtils.drawContext.blitSprite(
@@ -945,8 +946,7 @@ interface Renderable {
             DrawContextUtils.translate(0f, -renderY.toFloat())
         }
 
-        fun filterList(content: Map<Renderable, String?>, textBox: String) =
-            filterListBase(content, textBox, text("§cNo search results!"))
+        fun filterList(content: Map<Renderable, String?>, textBox: String) = filterListBase(content, textBox, text("§cNo search results!"))
 
         fun filterListMap(content: Map<List<Renderable>, String?>, textBox: String) =
             filterListBase(content, textBox, listOf(text("§cNo search results!")))
