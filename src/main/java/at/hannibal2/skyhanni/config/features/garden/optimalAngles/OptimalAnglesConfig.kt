@@ -31,4 +31,9 @@ class OptimalAnglesConfig {
     @ConfigOption(name = "Custom Angles", desc = "Change the mousemat angles for every single crop.")
     @Accordion
     val customAngles: CustomAnglesConfig = CustomAnglesConfig()
+
+    @Expose
+    @ConfigOption(name = "Alternative Custom Angles", desc = "Change the mousemat angles for every single crop.")
+    @Accordion
+    val alternativeCustomAngles: AlternativeCustomAnglesConfig = AlternativeCustomAnglesConfig()
 }

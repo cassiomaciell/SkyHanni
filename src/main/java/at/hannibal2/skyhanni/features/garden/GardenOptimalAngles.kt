@@ -34,15 +34,21 @@ object GardenOptimalAngles {
         val crops = CropType.entries.map { it to it.getAngles() }
 
         display = if (config.compactMousematGui) {
-            crops.groupBy({ it.second }, { it.first }).map { (angles, crops) ->
+            crops.groupBy({ it.second }, { it.first }).map { (anglePair, crops) ->
                 val stacks = Renderable.horizontal(crops.map { Renderable.item(it.icon) })
+                val (angles, altAngles) = anglePair
+
+                val main = "§e${angles.first}§7/§e${angles.second}"
+                val alt = "§6${altAngles.first}§7/§6${altAngles.second}"
+
                 val clickable = Renderable.clickable(
-                    " §7- §e${angles.first}§7/§e${angles.second}",
+                    if (angles != altAngles) " §7- $main §7| $alt" else " §7- $main",
                     tips = listOf(
                         "§7Click to set optimal angles",
                         "§7into the mousemat sign.",
                     ),
                     onLeftClick = { setAngles(angles) },
+                    onRightClick = { setAngles(altAngles) },
                 )
                 Renderable.horizontal(
                     stacks,
@@ -51,16 +57,22 @@ object GardenOptimalAngles {
                 )
             }
         } else {
-            crops.map { (crop, angles) ->
+            crops.map { (crop, anglePair) ->
                 val color = if (lastCrop == crop) LorenzColor.GOLD else LorenzColor.GREEN
                 val stack = Renderable.item(crop.icon)
+                val (angles, altAngles) = anglePair
+
+                val main = "§e${angles.first}§7/§e${angles.second}"
+                val alt = "§6${altAngles.first}§7/§6${altAngles.second}"
+
                 val clickable = Renderable.clickable(
-                    "${color.getChatColor()}${crop.cropName} §7- §e${angles.first}§7/§e${angles.second}",
+                    "${color.getChatColor()}${crop.cropName}" + if (angles != altAngles) " §7- $main §7| $alt" else " §7- $main",
                     tips = listOf(
                         "§7Click to set optimal angles for ${crop.cropName}",
                         "§7into the mousemat sign.",
                     ),
                     onLeftClick = { setAngles(angles) },
+                    onRightClick = { setAngles(altAngles) },
                 )
                 Renderable.horizontal(
                     stack,
@@ -93,22 +105,27 @@ object GardenOptimalAngles {
         SignUtils.setTextIntoSign("${angles.second}", 3)
     }
 
-    private fun CropType.getAngles() = getConfig().let { Pair(it.first.get(), it.second.get()) }
-
-    private fun CropType.getConfig(): Pair<Property<Float>, Property<Float>> = with(config.customAngles) {
-        when (this@getConfig) {
-            CropType.CACTUS -> cactusYaw to cactusPitch
-            CropType.WHEAT -> wheatYaw to wheatPitch
-            CropType.CARROT -> carrotYaw to carrotPitch
-            CropType.POTATO -> potatoYaw to potatoPitch
-            CropType.NETHER_WART -> netherWartYaw to netherWartPitch
-            CropType.PUMPKIN -> pumpkinYaw to pumpkinPitch
-            CropType.MELON -> melonYaw to melonPitch
-            CropType.COCOA_BEANS -> cocoaBeansYaw to cocoaBeansPitch
-            CropType.SUGAR_CANE -> sugarCaneYaw to sugarCanePitch
-            CropType.MUSHROOM -> mushroomYaw to mushroomPitch
-            CropType.SUNFLOWER, CropType.MOONFLOWER -> sunMoonFlowerYaw to sunMoonFlowerPitch
-            CropType.WILD_ROSE -> wildRoseYaw to wildRosePitch
-        }
+    private fun CropType.getAngles(): Pair<Pair<Float, Float>, Pair<Float, Float>> {
+        val normal = getConfig(false).let { it.first.get() to it.second.get() }
+        val alternative = getConfig(true).let { it.first.get() to it.second.get() }
+        return normal to alternative
     }
+
+    private fun CropType.getConfig(alt: Boolean = false): Pair<Property<Float>, Property<Float>> =
+        with(if (alt) config.alternativeCustomAngles else config.customAngles) {
+            when (this@getConfig) {
+                CropType.CACTUS -> cactusYaw to cactusPitch
+                CropType.WHEAT -> wheatYaw to wheatPitch
+                CropType.CARROT -> carrotYaw to carrotPitch
+                CropType.POTATO -> potatoYaw to potatoPitch
+                CropType.NETHER_WART -> netherWartYaw to netherWartPitch
+                CropType.PUMPKIN -> pumpkinYaw to pumpkinPitch
+                CropType.MELON -> melonYaw to melonPitch
+                CropType.COCOA_BEANS -> cocoaBeansYaw to cocoaBeansPitch
+                CropType.SUGAR_CANE -> sugarCaneYaw to sugarCanePitch
+                CropType.MUSHROOM -> mushroomYaw to mushroomPitch
+                CropType.SUNFLOWER, CropType.MOONFLOWER -> sunMoonFlowerYaw to sunMoonFlowerPitch
+                CropType.WILD_ROSE -> wildRoseYaw to wildRosePitch
+            }
+        }
 }
