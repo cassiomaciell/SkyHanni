@@ -229,14 +229,14 @@ object RenderUtils {
     }
 
     fun Position.renderRenderable(
-        renderable: Renderable?,
+        renderable: Renderable,
         posLabel: String,
         addToGuiManager: Boolean = true,
         debug: Boolean = false
     ) {
         // cause crashes and errors on purpose
         DrawContextUtils.drawContext
-        if ((!debug && MinecraftCompat.showDebugHud) || renderable == null) return
+        if (!debug && MinecraftCompat.showDebugHud) return
         DrawContextUtils.pushMatrix()
         val (x, y) = transform()
         Renderable.withMousePosition(x, y) {
